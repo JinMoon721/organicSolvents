@@ -1,0 +1,64 @@
+# === Compiled binary files ===
+*.o
+*.out
+*.exe
+*.a
+*.so
+*.dylib
+*.dll
+*.mod
+*.pyc
+*.pyo
+*.class
+
+# === CUDA compiler output ===
+*.cubin
+*.ptx
+*.linkinfo
+*.d
+
+# === Executables and builds ===
+bin/
+build/
+dist/
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+
+# === VS Code / CLion / IDEs ===
+.vscode/
+.idea/
+
+# === Logs and runtime files ===
+*.log
+*.tmp
+*.bak
+*.swp
+*.swo
+
+# === Datasets and analysis outputs ===
+analysis/
+results/
+data/
+
+# === OS/Editor files ===
+.DS_Store
+Thumbs.db
+
+# === Jupyter notebooks checkpoint ===
+.ipynb_checkpoints/
+
+# === Environment / virtualenv ===
+.env/
+.venv/
+venv/
+__pycache__/
+
+# === Git / SSH / Credentials ===
+*.key
+*.pem
+*.crt
+*.p12
+*.env
+secrets.json
+
