@@ -1,44 +1,47 @@
-NVCC=nvcc
-CFLAGS = -O3 ## optimize make
+#compiler settings
+CXX 		  := g++
+NVCC		  := nvcc
+CXXFLAGS  := -std=c++17 -O2 -Iinclude
+NVCCFLAGS := -std=c++17 -O2 -Iinclude
+
+# Directories
+SRC_DIR   := src
+EX_DIR    := examples
+BUILD_DIR := build
+BIN_DIR   := bin
 
 
-#Directories
-SRC_DIR = src
-BIN_DIR = bin
+# Collect all sources
+CPP_SRCS  := $(wildcard $(SRC_DIR)/*.cpp)
+CU_SRCS   := $(wildcard $(EX_DIR)/*.cu)
 
+# turn sources into object files
+CPP_OBJS  := $(patsubst $(SRC_DIR)/%.cpp,$(BUILD_DIR)/%.o,$(CPP_SRCS)) 
+CU_OBJS   := $(patsubst $(EX_DIR)/%.cu,$(BUILD_DIR)/%.o,$(CU_SRCS)) 
 
-#programs to build
-#PROGRAMS = conductivity rate
-## automatically detect all subdirectories`
-PROGRAMS := $(notdir $(wildcard $(SRC_DIR)/*))
+# Final program
+TARGET    := $(BIN_DIR)/computeAngle
 
-define SRC_FILES
-$(wildcard $(SRC_DIR)/$1/*.cu)
-endef
+#default rule
+all: $(TARGET)
 
-## create map: executable depends on its source files
-define PROGRAM_RULE
-$(BIN_DIR)/$1: $$(call SRC_FILES,$1)
-	@echo "Building $1 ..."
-	@mkdir -p $(BIN_DIR)
-	$$(NVCC) $$(CFLAGS) $$(call SRC_FILES,$1) -o $$@
-endef
+# Link step
+$(TARGET): $(CPP_OBJS) $(CU_OBJS) | $(BIN_DIR)
+	$(NVCC) -o $@ $^
 
-# Target executable
-TARGETS = $(patsubst %, $(BIN_DIR)/%, $(PROGRAMS))
+# compile c++ sources
+$(BUILD_DIR)/%.o: $(SRC_DIR)/%.cpp | $(BUILD_DIR)
+	$(CXX) $(CXXFLAGS) -c $< -o $@
 
-.PHONY: all clean
+# compile CUDA sources
+$(BUILD_DIR)/%.o: $(EX_DIR)/%.cu | $(BUILD_DIR)
+	$(NVCC) $(NVCCFLAGS) -c $< -o $@
 
-all: $(TARGETS)
-
-# one build rule per program
-$(foreach prog,$(PROGRAMS), $(eval $(call PROGRAM_RULE,$(prog))))
-
-# allow "make program1" instead of "make bin/program1"
-$(PROGRAMS): %: $(BIN_DIR)/%
-	@echo "Done building $@"
+# ensure output directory exist
+$(BUILD_DIR) $(BIN_DIR):
+	mkdir -p $@
 
 clean:
-	rm -rf $(BIN_DIR)
+	rm -rf $(BUILD_DIR) $(BIN_DIR)
 
 
